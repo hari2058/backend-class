@@ -30,7 +30,7 @@ const server = http.createServer((req, res) => {
 
     //contact us file
     const currentWorkingDirectory = process.cwd();
-    console.log("Current Working drrectiory", currentWorkingDirectory);
+    console.log("Current Working directiory", currentWorkingDirectory);
 
     const filePath = path.join(
       currentWorkingDirectory,
@@ -42,10 +42,46 @@ const server = http.createServer((req, res) => {
 
     res.write(contactUsFile.toString());
     res.end();
-  } 
-});
+  } else if (req.url === "/about-us") {
+    console.log("About Us Page");
+    res.writeHead(200, "About Page sent successfully.", {
+      "content-Type": "text/html",
+    });
 
-const errorPage = 
+    const currentWorkingDirectory = process.cwd();
+    console.log("Current Working directory", currentWorkingDirectory);
+
+    const filePath = path.join(
+      currentWorkingDirectory,
+      "src/pages/about-us.html"
+    );
+
+    const aboutUsFile = fs.readFileSync(filePath);
+    console.log("file content", aboutUsFile.toString());
+
+    res.write(aboutUsFile.toString());
+    res.end();
+  } else {
+    console.log("error  Page");
+    res.writeHead(200, "error Page sent successfully.", {
+      "content-Type": "text/html",
+    });
+
+    const currentWorkingDirectory = process.cwd();
+    console.log("Current Working directory", currentWorkingDirectory);
+
+    const filePath = path.join(
+      currentWorkingDirectory,
+      "src/pages/errorpage.html"
+    );
+
+    const errorUsFile = fs.readFileSync(filePath);
+    console.log("file content", errorUsFile.toString());
+
+    res.write(errorUsFile.toString());
+    res.end();
+  }
+});
 
 server.listen(3000, () => {
   console.log("started server @ http://localhost:3000");
