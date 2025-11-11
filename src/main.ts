@@ -2,8 +2,10 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   console.log("Request received", req.url);
+
+  let body = "";
 
   if (req.url === "/") {
     console.log("Root Page");
@@ -61,7 +63,49 @@ const server = http.createServer((req, res) => {
 
     res.write(aboutUsFile.toString());
     res.end();
-  } else {
+  } else if (req.url === "/submit-form" && req.method === "POST") {
+    console.log("SUbmitting form");
+
+    async function processData() {
+      return new Promise((resolve, reject) => {
+        req.on("data", (data) => {
+          console.log("data received", data.toString());
+          body += data;
+          resolve(data);
+        });
+      });
+    }
+
+    await processData();
+
+    async function processError() {
+      return new Promise((resolve, reject) => {
+        req.on("end", () => {
+          console.log("All data received");
+          resolve("All data received");
+        });
+      });
+    }
+    await processError();
+
+    res.writeHead(201, "Form is submitted.", {
+      "Content-Type": "application/json",
+    });
+
+    res.write(
+      JSON.stringify({
+        message: "Form Submitted successfully!",
+        data: JSON.parse(body),
+      })
+    );
+
+    console.log("response sent");
+    res.end();
+  }
+  // else if ( req.url == "/todo-route" && req.method === "POST") {
+
+  // }
+  else {
     console.log("error  Page");
     res.writeHead(200, "error Page sent successfully.", {
       "content-Type": "text/html",

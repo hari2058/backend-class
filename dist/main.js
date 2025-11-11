@@ -6,8 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = __importDefault(require("http"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const server = http_1.default.createServer((req, res) => {
+const server = http_1.default.createServer(async (req, res) => {
     console.log("Request received", req.url);
+    let body = "";
     if (req.url === "/") {
         console.log("Root Page");
         res.writeHead(200, "Home Page Sent Successfully", {
@@ -49,6 +50,39 @@ const server = http_1.default.createServer((req, res) => {
         res.write(aboutUsFile.toString());
         res.end();
     }
+    else if (req.url === "/submit-form" && req.method === "POST") {
+        console.log("SUbmitting form");
+        async function processData() {
+            return new Promise((resolve, reject) => {
+                req.on("data", (data) => {
+                    console.log("data received", data.toString());
+                    body += data;
+                    resolve(data);
+                });
+            });
+        }
+        await processData();
+        async function processError() {
+            return new Promise((resolve, reject) => {
+                req.on("end", () => {
+                    console.log("All data received");
+                    resolve("All data received");
+                });
+            });
+        }
+        await processError();
+        res.writeHead(201, "Form is submitted.", {
+            "Content-Type": "application/json",
+        });
+        res.write(JSON.stringify({
+            message: "Form Submitted successfully!",
+            data: JSON.parse(body),
+        }));
+        console.log("response sent");
+        res.end();
+    }
+    // else if ( req.url == "/todo-route" && req.method === "POST") {
+    // }
     else {
         console.log("error  Page");
         res.writeHead(200, "error Page sent successfully.", {
