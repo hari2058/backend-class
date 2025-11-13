@@ -4,12 +4,18 @@
   "description": "First Backend Project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx --watch src/express-main.ts",
+    "dev-http": "tsx --watch src/main.ts"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^5.0.5",
     "@types/node": "^24.10.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "tsx": "^4.20.6"
   }
 }

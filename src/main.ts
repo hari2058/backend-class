@@ -32,7 +32,7 @@ const server = http.createServer(async (req, res) => {
     res.end();
   } else if (req.url === "/contact-us") {
     console.log("Contact us page");
-    res.writeHead(200, "contact Page Sent Successfully", {
+    res.writeHead(200, "contact Page Sent successfully.", {
       "content-Type": "text/html",
     });
 
@@ -221,7 +221,74 @@ const server = http.createServer(async (req, res) => {
       })
     );
     res.end();
-  } else {
+  } else if (req.url?.includes("/todo-route?id=") && req.method === "GET") {
+    //get elelemts by id
+    const url = req.url;
+    //if url ma id null pathaye chai error display garna ko lagi
+    const idNullable = url.split("=")[1];
+
+    if (!idNullable) {
+      res.writeHead(400, "id not valid", {
+        "content-type": "application/json",
+      });
+
+      res.write(
+        JSON.stringify({
+          message: "Send the valid id!",
+        })
+      );
+      res.end();
+      return;
+    }
+
+    const idNum = parseInt(idNullable);
+
+    //check if todo exists in the array by the same id
+
+    const todoFound = todos.find((todo) => {
+      if (todo.id === idNum) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    if (!todoFound) {
+      res.writeHead(404, "Todo  found", {
+        "content-type": "application/json",
+      });
+      res.write(
+        JSON.stringify({
+          message: "Todo  found!",
+        })
+      );
+      res.end();
+    }
+
+    const updatedTodos = todos.filter((todo) => {
+      if (todo.id === idNum) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    todos = updatedTodos;
+    res.writeHead(200, "Todo Updated using id.", {
+      "content-type": "application/json",
+    });
+    res.write(
+      JSON.stringify({
+        message: "Todo updated by id.",
+        todos: updatedTodos,
+      })
+    );
+    res.end();
+  }
+  // else if (req.url == "/todo-route" && req.method === "PUT") {
+
+  // }
+  else {
     console.log("error  Page");
     res.writeHead(200, "error Page sent successfully.", {
       "content-Type": "text/html",
@@ -246,3 +313,15 @@ const server = http.createServer(async (req, res) => {
 server.listen(3000, () => {
   console.log("started server @ http://localhost:3000");
 });
+
+//  {
+//   "id": 1,
+//   "name": "ram",
+//   "email": "ram@gmail.com",
+//  }
+
+//  {
+//   "id": 2,
+//   "name": "shyam",
+//   "email": "shyam@gmail.com",
+//  }
